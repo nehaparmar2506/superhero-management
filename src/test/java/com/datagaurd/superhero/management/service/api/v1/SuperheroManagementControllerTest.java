@@ -1,21 +1,26 @@
 package com.datagaurd.superhero.management.service.api.v1;
 
 import com.datagaurd.superhero.management.service.api.v1.model.Superhero;
+import com.datagaurd.superhero.management.service.service.SuperheroService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SuperheroManagementController.class)
 public class SuperheroManagementControllerTest {
@@ -25,6 +30,8 @@ public class SuperheroManagementControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     private AutoCloseable closeable;
+    @MockBean
+    private SuperheroService superheroService;
 
     @BeforeEach
     public void setUp() {
@@ -38,15 +45,24 @@ public class SuperheroManagementControllerTest {
     }
 
     @Test
-    public void createSuperHero() throws Exception {
+    @SneakyThrows
+    public void createSuperHero() {
+        // mocks
         Superhero superheroRequestMock = getSuperheroRequestMock();
+        when(superheroService.createSuperhero(any(Superhero.class))).thenReturn(1L);
 
-        mockMvc.perform(post("/api/v1/superheroes")
+        // request
+        var resultActions =
+                mockMvc.perform(post("/api/v1/superheroes")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(superheroRequestMock)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.alias").value("Iron Man"))
-                .andExpect(jsonPath("$.name").value("Tony Stark"));
+                        .content(objectMapper.writeValueAsString(superheroRequestMock)));
+
+        // Verify
+        var response = resultActions.andReturn().getResponse();
+        assertEquals(response.getStatus(), HttpStatus.CREATED.value());
+        String location = response.getHeader("Location");
+        assertNotNull(location);
+        assertTrue(location.contains("/api/v1/superheroes/1"));
     }
 
     private static Superhero getSuperheroRequestMock() {
