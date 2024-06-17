@@ -1,4 +1,4 @@
-package com.datagaurd.superhero_management_service;
+package com.datagaurd.superhero.management.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

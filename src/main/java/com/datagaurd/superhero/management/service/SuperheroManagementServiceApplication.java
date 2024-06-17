@@ -1,4 +1,4 @@
-package com.datagaurd.superhero_management_service;
+package com.datagaurd.superhero.management.service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
