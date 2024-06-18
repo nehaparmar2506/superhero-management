@@ -7,6 +7,8 @@ import com.datagaurd.superhero.management.service.repository.SuperheroRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SuperheroServiceImpl implements SuperheroService {
 
@@ -17,5 +19,15 @@ public class SuperheroServiceImpl implements SuperheroService {
     public Long createSuperhero(Superhero superhero) {
         SuperheroEntity superheroEntity = SuperheroMapper.toDBEntity(superhero);
         return superheroRepository.save(superheroEntity).getId();
+    }
+
+    @Override
+    public List<Superhero> getSuperheroes() {
+        return null;
+    }
+
+    @Override
+    public Superhero getSuperheroById(Long id) {
+        return null;
     }
 }

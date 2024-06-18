@@ -6,12 +6,10 @@ import com.datagaurd.superhero.management.service.service.SuperheroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/superheroes")
@@ -25,5 +23,14 @@ public class SuperheroManagementController{
                 .contentType(MediaType.APPLICATION_JSON)
                 .build();
     }
+    @GetMapping
+    public List<Superhero> getSuperheroes() {
+        return superheroService.getSuperheroes();
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Superhero> getSuperheroById(@PathVariable Long id) {
+        Superhero superhero = superheroService.getSuperheroById(id);
+        return ResponseEntity.ok(superhero);
+    }
 }

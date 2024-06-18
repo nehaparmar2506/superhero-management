@@ -16,11 +16,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SuperheroManagementController.class)
 public class SuperheroManagementControllerTest {
@@ -63,6 +68,33 @@ public class SuperheroManagementControllerTest {
         String location = response.getHeader("Location");
         assertNotNull(location);
         assertTrue(location.contains("/api/v1/superheroes/1"));
+    }
+    @Test
+    public void testGetSuperheroes() throws Exception {
+        Superhero Superhero = getSuperheroRequestMock();
+
+        List<Superhero> SuperheroList = Collections.singletonList(Superhero);
+
+        when(superheroService.getSuperheroes()).thenReturn(SuperheroList);
+
+        mockMvc.perform(get("/api/v1/superheroes")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].alias").value("Iron Man"))
+                .andExpect(jsonPath("$[0].name").value("Tony Stark"));
+    }
+
+    @Test
+    public void testGetSuperheroById() throws Exception {
+        Superhero Superhero = getSuperheroRequestMock();
+
+        when(superheroService.getSuperheroById(1L)).thenReturn(Superhero);
+
+        mockMvc.perform(get("/api/v1/superheroes/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.alias").value("Iron Man"))
+                .andExpect(jsonPath("$.name").value("Tony Stark"));
     }
 
     private static Superhero getSuperheroRequestMock() {
