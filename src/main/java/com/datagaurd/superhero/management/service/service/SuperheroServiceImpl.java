@@ -1,5 +1,6 @@
 package com.datagaurd.superhero.management.service.service;
 
+import com.datagaurd.superhero.management.service.api.exception.ResourceNotFoundException;
 import com.datagaurd.superhero.management.service.api.v1.model.Superhero;
 import com.datagaurd.superhero.management.service.entity.SuperheroEntity;
 import com.datagaurd.superhero.management.service.entity.mapper.SuperheroMapper;
@@ -31,7 +32,8 @@ public class SuperheroServiceImpl implements SuperheroService {
 
     @Override
     public Superhero getSuperheroById(Long id) {
-        Optional<SuperheroEntity> superhero = superheroRepository.findById(id);
-        return SuperheroMapper.toDTO(superhero.get());
+        SuperheroEntity superheroEntity = superheroRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Superhero not found with id: " + id));
+        return SuperheroMapper.toDTO(superheroEntity);
     }
 }

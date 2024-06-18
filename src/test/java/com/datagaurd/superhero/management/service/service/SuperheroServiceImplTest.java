@@ -1,6 +1,7 @@
 package com.datagaurd.superhero.management.service.service;
 
 
+import com.datagaurd.superhero.management.service.api.exception.ResourceNotFoundException;
 import com.datagaurd.superhero.management.service.api.v1.model.Superhero;
 import com.datagaurd.superhero.management.service.entity.SuperheroEntity;
 import com.datagaurd.superhero.management.service.entity.mapper.SuperheroMapper;
@@ -97,11 +98,11 @@ public class SuperheroServiceImplTest {
     void testGetSuperheroByIdNotFound() {
         when(superheroRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(NoSuchElementException.class, () -> {
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             superheroService.getSuperheroById(1L);
         });
 
-        assertEquals(NoSuchElementException.class, exception.getClass());
+        assertEquals(ResourceNotFoundException.class, exception.getClass());
     }
 
     private static Superhero mockSuperhero() {

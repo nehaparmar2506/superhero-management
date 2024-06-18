@@ -1,5 +1,6 @@
 package com.datagaurd.superhero.management.service.api.v1;
 
+import com.datagaurd.superhero.management.service.api.exception.ResourceNotFoundException;
 import com.datagaurd.superhero.management.service.api.v1.model.Superhero;
 import com.datagaurd.superhero.management.service.service.SuperheroService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -96,7 +97,28 @@ public class SuperheroManagementControllerTest {
                 .andExpect(jsonPath("$.alias").value("Iron Man"))
                 .andExpect(jsonPath("$.name").value("Tony Stark"));
     }
+    @Test
+    public void testGetSuperheroByIdNotFound() throws Exception {
+        when(superheroService.getSuperheroById(1L)).thenThrow(new ResourceNotFoundException("Superhero not found with id: 1"));
 
+        mockMvc.perform(get("/api/v1/superheroes/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Superhero not found with id: 1"));
+    }
+
+    @Test
+    public void testCreateSuperheroWithError() throws Exception {
+        Superhero superhero = getSuperheroRequestMock();
+
+        when(superheroService.createSuperhero(any(Superhero.class))).thenThrow(new RuntimeException("An unexpected error occurred"));
+
+        mockMvc.perform(post("/api/v1/superheroes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(superhero)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.error").value("An unexpected error occurred"));
+    }
     private static Superhero getSuperheroRequestMock() {
         return Superhero.builder()
                 .alias("Iron Man").name("Tony Stark")
