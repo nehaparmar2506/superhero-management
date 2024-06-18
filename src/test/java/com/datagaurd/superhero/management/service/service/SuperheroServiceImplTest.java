@@ -13,9 +13,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -52,6 +54,54 @@ public class SuperheroServiceImplTest {
         assertNotNull(id);
         assertEquals(id, 1);
 
+    }
+
+    @Test
+    void testGetSuperheroes() {
+        var superheroEntity1 = SuperheroEntity.builder()
+                .id(1L)
+                .alias("Superman")
+                .name("Clark Kent")
+                .build();
+        var superheroEntity2 = SuperheroEntity.builder()
+                .id(2L)
+                .alias("Batman")
+                .name("Bruce Wayne")
+                .build();
+
+        when(superheroRepository.findAll()).thenReturn(Arrays.asList(superheroEntity1, superheroEntity2));
+
+        List<Superhero> result = superheroService.getSuperheroes();
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(SuperheroMapper.toDTO(superheroEntity1)));
+        assertTrue(result.contains(SuperheroMapper.toDTO(superheroEntity2)));
+    }
+
+    @Test
+    void testGetSuperheroById() {
+        var superheroEntity1 = SuperheroEntity.builder()
+                .id(1L)
+                .alias("Superman")
+                .name("Clark Kent")
+                .build();
+        when(superheroRepository.findById(1L)).thenReturn(Optional.of(superheroEntity1));
+
+        Superhero result = superheroService.getSuperheroById(1L);
+
+        assertNotNull(result);
+        assertEquals(SuperheroMapper.toDTO(superheroEntity1), result);
+    }
+
+    @Test
+    void testGetSuperheroByIdNotFound() {
+        when(superheroRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(NoSuchElementException.class, () -> {
+            superheroService.getSuperheroById(1L);
+        });
+
+        assertEquals(NoSuchElementException.class, exception.getClass());
     }
 
     private static Superhero mockSuperhero() {

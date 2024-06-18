@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SuperheroServiceImpl implements SuperheroService {
@@ -23,11 +25,13 @@ public class SuperheroServiceImpl implements SuperheroService {
 
     @Override
     public List<Superhero> getSuperheroes() {
-        return null;
-    }
+        return superheroRepository.findAll().stream()
+                .map(SuperheroMapper::toDTO)
+                .collect(Collectors.toList());    }
 
     @Override
     public Superhero getSuperheroById(Long id) {
-        return null;
+        Optional<SuperheroEntity> superhero = superheroRepository.findById(id);
+        return SuperheroMapper.toDTO(superhero.get());
     }
 }

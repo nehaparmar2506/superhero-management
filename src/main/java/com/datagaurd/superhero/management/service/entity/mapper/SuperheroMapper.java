@@ -7,6 +7,7 @@ import com.datagaurd.superhero.management.service.entity.PowerEntity;
 import com.datagaurd.superhero.management.service.entity.SuperheroEntity;
 import com.datagaurd.superhero.management.service.entity.WeaponEntity;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,45 @@ public class SuperheroMapper {
                         AssociationEntity.builder()
                                 .name(name).superheroEntity(superhero).build()
                 )
+                .collect(Collectors.toList());
+    }
+
+    public static Superhero toDTO(SuperheroEntity superhero) {
+        return Superhero.builder()
+                .id(superhero.getId())
+                .alias(superhero.getAlias())
+                .name(superhero.getName())
+                .origin(superhero.getOrigin())
+                .powers(mapPowers(superhero.getPowers()))
+                .weapons(mapWeapons(superhero.getWeapons()))
+                .associations(mapAssociations(superhero.getAssociations()))
+                .build();
+    }
+
+    private static List<String> mapPowers(List<PowerEntity> powers) {
+        if (powers == null) {
+            return Collections.emptyList();
+        }
+        return powers.stream()
+                .map(PowerEntity::getName)
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> mapWeapons(List<WeaponEntity> weapons) {
+        if (weapons == null) {
+            return Collections.emptyList();
+        }
+        return weapons.stream()
+                .map(WeaponEntity::getName)
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> mapAssociations(List<AssociationEntity> associations) {
+        if (associations == null) {
+            return Collections.emptyList();
+        }
+        return associations.stream()
+                .map(AssociationEntity ::getName)
                 .collect(Collectors.toList());
     }
 }
