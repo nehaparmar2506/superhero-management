@@ -16,16 +16,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/superheroes")
 @Validated
-public class SuperheroManagementController{
+public class SuperheroManagementController {
     @Autowired
     private SuperheroService superheroService;
+
     @PostMapping
     public ResponseEntity<URI> createSuperhero(@Valid @RequestBody Superhero superhero) {
-        Long id =  superheroService.createSuperhero(superhero);
+        Long id = superheroService.createSuperhero(superhero);
         return ResponseEntity.created(URI.create("/api/v1/superheroes/" + id))
                 .contentType(MediaType.APPLICATION_JSON)
                 .build();
     }
+
     @GetMapping
     public List<Superhero> getSuperheroes() {
         return superheroService.getSuperheroes();

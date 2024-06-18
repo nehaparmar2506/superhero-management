@@ -41,11 +41,20 @@ public class SuperheroManagementControllerTest {
     @MockBean
     private SuperheroService superheroService;
 
+    private static Superhero getSuperheroRequestMock() {
+        return Superhero.builder()
+                .alias("Iron Man").name("Tony Stark")
+                .powers(Arrays.asList("genius-intelligence", "wealth"))
+                .weapons(Arrays.asList("arc-reactor", "iron-man-suit", "iron-legion"))
+                .origin("Kidnapped in Afghanistan, created the first iron-man suit to escape.")
+                .associations(Arrays.asList("war-machine", "avengers", "jarvis", "thanos", "pepper-potts"))
+                .build();
+    }
+
     @BeforeEach
     public void setUp() {
         closeable = MockitoAnnotations.openMocks(this);
     }
-
 
     @AfterEach
     public void tearDown() throws Exception {
@@ -72,6 +81,7 @@ public class SuperheroManagementControllerTest {
         assertNotNull(location);
         assertTrue(location.contains("/api/v1/superheroes/1"));
     }
+
     @Test
     public void createSuperheroWithInvalidData() throws Exception {
         mockMvc.perform(post("/api/v1/superheroes")
@@ -81,6 +91,7 @@ public class SuperheroManagementControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json("{\"name\":\"Name is mandatory\"}"));
     }
+
     @Test
     public void testGetSuperheroes() throws Exception {
         Superhero Superhero = getSuperheroRequestMock();
@@ -108,6 +119,7 @@ public class SuperheroManagementControllerTest {
                 .andExpect(jsonPath("$.alias").value("Iron Man"))
                 .andExpect(jsonPath("$.name").value("Tony Stark"));
     }
+
     @Test
     public void testGetSuperheroByIdNotFound() throws Exception {
         when(superheroService.getSuperheroById(1L)).thenThrow(new ResourceNotFoundException("Superhero not found with id: 1"));
@@ -129,15 +141,6 @@ public class SuperheroManagementControllerTest {
                         .content(objectMapper.writeValueAsString(superhero)))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.error").value("An unexpected error occurred"));
-    }
-    private static Superhero getSuperheroRequestMock() {
-        return Superhero.builder()
-                .alias("Iron Man").name("Tony Stark")
-                .powers(Arrays.asList("genius-intelligence", "wealth"))
-                .weapons(Arrays.asList("arc-reactor", "iron-man-suit", "iron-legion"))
-                .origin("Kidnapped in Afghanistan, created the first iron-man suit to escape.")
-                .associations(Arrays.asList("war-machine", "avengers", "jarvis", "thanos", "pepper-potts"))
-                .build();
     }
 }
 

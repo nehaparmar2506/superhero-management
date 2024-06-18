@@ -15,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +29,14 @@ public class SuperheroServiceImplTest {
     @InjectMocks
     private SuperheroServiceImpl superheroService;
     private AutoCloseable closeable;
+
+    private static Superhero mockSuperhero() {
+        return Superhero.builder()
+                .alias("Test Superhero")
+                .name("Test Name")
+                .powers(Arrays.asList("Power1", "Power2"))
+                .build();
+    }
 
     @BeforeEach
     public void setUp() {
@@ -103,14 +110,6 @@ public class SuperheroServiceImplTest {
         });
 
         assertEquals(ResourceNotFoundException.class, exception.getClass());
-    }
-
-    private static Superhero mockSuperhero() {
-        return Superhero.builder()
-                .alias("Test Superhero")
-                .name("Test Name")
-                .powers(Arrays.asList("Power1", "Power2"))
-                .build();
     }
 
 }

@@ -93,7 +93,7 @@ public class SuperheroMapper {
             return Collections.emptyList();
         }
         return associations.stream()
-                .map(AssociationEntity ::getName)
+                .map(AssociationEntity::getName)
                 .collect(Collectors.toList());
     }
 }
